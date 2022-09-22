@@ -3,7 +3,7 @@
 import { ResourceFunctionType, ResourceType, TypeBaseKind, TypeFile, TypeIndex, TypeIndexEntry } from "./types";
 import { orderBy } from "./utils";
 
-export async function buildIndex(typeFiles: TypeFile[], logFunc: (val: string) => void): Promise<TypeIndex> {
+export function buildIndex(typeFiles: TypeFile[], logFunc: (val: string) => void): TypeIndex {
   const resourceTypes = new Set<string>();
   const resourceFunctions = new Set<string>();
   const resDictionary: Record<string, TypeIndexEntry> = {};
