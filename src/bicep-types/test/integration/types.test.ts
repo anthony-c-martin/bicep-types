@@ -20,8 +20,8 @@ describe('types tests', () => {
     const json = writeJson(factory.types);
     expect(json).toBe('[{\"1\":{\"Kind\":1}},{\"1\":{\"Kind\":2}},{\"1\":{\"Kind\":3}},{\"1\":{\"Kind\":4}},{\"1\":{\"Kind\":5}},{\"1\":{\"Kind\":6}},{\"1\":{\"Kind\":7}},{\"1\":{\"Kind\":8}},{\"2\":{\"Name\":\"foo\",\"Properties\":{\"abc\":{\"Type\":4,\"Flags\":0,\"Description\":\"Abc prop\"},\"def\":{\"Type\":5,\"Flags\":2,\"Description\":\"Def prop\"},\"ghi\":{\"Type\":2,\"Flags\":4,\"Description\":\"Ghi prop\"}}}},{\"4\":{\"Name\":\"foo@v1\",\"ScopeType\":0,\"Body\":8,\"Flags\":0}}]');
 
-    const markdown = writeMarkdown('Foo', 'v1', factory.types);
-    expect(markdown).toBe(`# Foo @ v1
+    const markdown = writeMarkdown(factory.types);
+    expect(markdown).toBe(`# Bicep Types
 
 ## Resource foo@v1
 * **Valid Scope(s)**: Unknown
@@ -33,18 +33,18 @@ describe('types tests', () => {
 `);
 
 const index = buildIndex([{
-  relativePath: 'http/v1/types.json',
+  relativePath: 'foo/types.json',
   types: factory.types,
 }], _ => {});
 
 const jsonIndex = writeIndexJson(index);
-expect(jsonIndex).toBe("{\"Resources\":{\"foo@v1\":{\"RelativePath\":\"http/v1/types.json\",\"Index\":9}},\"Functions\":{}}");
+expect(jsonIndex).toBe("{\"Resources\":{\"foo@v1\":{\"RelativePath\":\"foo/types.json\",\"Index\":9}},\"Functions\":{}}");
 
 const markdownIndex = writeIndexMarkdown(index);
 expect(markdownIndex).toBe(`# Bicep Types
 ## foo@v1
 ### foo
-* [v1](http/v1/types.md#resource-foov1)
+* **Link**: [v1](foo/types.md#resource-foov1)
 
 `);
   });
@@ -52,21 +52,21 @@ expect(markdownIndex).toBe(`# Bicep Types
   it('should generated http types', async () => {
     const factory = new TypeFactory();
 
-    const props = factory.addType(new ObjectType('httpProps', {
-      url: new ObjectProperty(factory.builtInTypes[BuiltInTypeKind.String], ObjectPropertyFlags.None, 'The URL to submit the web request to.'),
+    const props = factory.addType(new ObjectType('request@v1', {
+      requestUri: new ObjectProperty(factory.builtInTypes[BuiltInTypeKind.String], ObjectPropertyFlags.None, 'The HTTP request URI to submit a GET request to.'),
     }));
-    const res = factory.addType(new ResourceType('http@v1', ScopeType.Unknown, undefined, props, ResourceFlags.None));
+    factory.addType(new ResourceType('request@v1', ScopeType.Unknown, undefined, props, ResourceFlags.None));
 
     const json = writeJson(factory.types);
-    expect(json).toBe('[{\"1\":{\"Kind\":1}},{\"1\":{\"Kind\":2}},{\"1\":{\"Kind\":3}},{\"1\":{\"Kind\":4}},{\"1\":{\"Kind\":5}},{\"1\":{\"Kind\":6}},{\"1\":{\"Kind\":7}},{\"1\":{\"Kind\":8}},{\"2\":{\"Name\":\"httpProps\",\"Properties\":{\"url\":{\"Type\":4,\"Flags\":0,\"Description\":\"The URL to submit the web request to.\"}}}},{\"4\":{\"Name\":\"http@v1\",\"ScopeType\":0,\"Body\":8,\"Flags\":0}}]');
+    expect(json).toBe('[{\"1\":{\"Kind\":1}},{\"1\":{\"Kind\":2}},{\"1\":{\"Kind\":3}},{\"1\":{\"Kind\":4}},{\"1\":{\"Kind\":5}},{\"1\":{\"Kind\":6}},{\"1\":{\"Kind\":7}},{\"1\":{\"Kind\":8}},{\"2\":{\"Name\":\"request@v1\",\"Properties\":{\"requestUri\":{\"Type\":4,\"Flags\":0,\"Description\":\"The HTTP request URI to submit a GET request to.\"}}}},{\"4\":{\"Name\":\"request@v1\",\"ScopeType\":0,\"Body\":8,\"Flags\":0}}]');
 
-    const markdown = writeMarkdown('Foo', 'v1', factory.types);
-    expect(markdown).toBe(`# Foo @ v1
+    const markdown = writeMarkdown(factory.types);
+    expect(markdown).toBe(`# Bicep Types
 
-## Resource http@v1
+## Resource request@v1
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **url**: string: The URL to submit the web request to.
+* **requestUri**: string: The HTTP request URI to submit a GET request to.
 
 `);
 
@@ -76,13 +76,13 @@ expect(markdownIndex).toBe(`# Bicep Types
     }], _ => {});
 
     const jsonIndex = writeIndexJson(index);
-    expect(jsonIndex).toBe("{\"Resources\":{\"http@v1\":{\"RelativePath\":\"http/v1/types.json\",\"Index\":9}},\"Functions\":{}}");
+    expect(jsonIndex).toBe("{\"Resources\":{\"request@v1\":{\"RelativePath\":\"http/v1/types.json\",\"Index\":9}},\"Functions\":{}}");
 
     const markdownIndex = writeIndexMarkdown(index);
     expect(markdownIndex).toBe(`# Bicep Types
-## http@v1
-### http
-* [v1](http/v1/types.md#resource-httpv1)
+## request@v1
+### request
+* **Link**: [v1](http/v1/types.md#resource-requestv1)
 
 `);
   });
